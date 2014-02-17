@@ -17,7 +17,7 @@ In [Corey's talk](http://www.confreaks.com/videos/104-aac2009-lightning-talk-und
 
 This is certainly true, and it's interesting to also try implementing familiar algorithms in other languages to see how it makes you think about the task at hand. In this case, I think that the added safety of types, as well as the increased transparency of the language from Parsec is a big improvement.
 
-Here's how the two algorithms look, side-by-side. what do you think?
+Here's how the two algorithms look, side-by-side. What do you think?
 
 ![Ruby and Haskell code side-by-side](ruby-vs-haskell.png "Ruby versus Haskell")
 
