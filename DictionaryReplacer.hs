@@ -1,16 +1,5 @@
 {-# LANGUAGE FlexibleContexts, NoMonomorphismRestriction #-}
 
-{-
-   DictionaryReplacer.hs
-
-   A type-safe dictionary replacer. Looks up words in given sentence in
-   dictionary and returns translated text.
-
-   Dependencies: Parsec
-
-   Usage: runghc DictionaryReplacer.hs
--}
-
 import Text.Parsec
 import qualified Data.Map as M
 import Data.Either (partitionEithers)
