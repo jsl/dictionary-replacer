@@ -9,15 +9,14 @@ import System.IO (hPutStrLn, stderr)
 data Word = ReplaceableWord String | NonReplaceableWord String
             deriving (Ord, Eq, Show)
 
--- Tokenization rules
+-- Lexer
+
 wordToken = many1 alphaNum
 
-replaceableTokenMarker = char '$'
-
 replaceableWord = do
-  replaceableTokenMarker
+  char '$'
   s <- wordToken
-  replaceableTokenMarker
+  char '$'
   return $ ReplaceableWord s
 
 nonReplaceableWord = do
@@ -33,8 +32,8 @@ lookupWord dict (ReplaceableWord w) =
       Nothing -> Left w
       Just wd -> Right wd
 
+-- Parser
 
--- Parsing
 evaluateTemplate :: M.Map Word String -> [Word] -> Either [String] [String]
 evaluateTemplate dict words =
     if null (fst searched) then
@@ -44,9 +43,13 @@ evaluateTemplate dict words =
 
     where searched = partitionEithers $ map (lookupWord dict) words
 
+-- Input dictionary
+
 dictionary :: M.Map Word String
 dictionary = M.fromList [ (ReplaceableWord "foo", "bar")
                         , (ReplaceableWord "baz", "buzz") ]
+
+-- Driver function
 
 main = do
   toTranslate <- getLine
