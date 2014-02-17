@@ -1,5 +1,16 @@
 {-# LANGUAGE FlexibleContexts, NoMonomorphismRestriction #-}
 
+{-
+   DictionaryReplacer.hs
+
+   A type-safe dictionary replacer. Looks up words in given sentence in
+   dictionary and returns translated text.
+
+   Dependencies: Parsec
+
+   Usage: runghc DictionaryReplacer.hs
+-}
+
 import Text.Parsec
 import qualified Data.Map as M
 import Data.Either (partitionEithers)
@@ -9,9 +20,9 @@ import System.IO (hPutStrLn, stderr)
 data Word = ReplaceableWord String | NonReplaceableWord String
             deriving (Ord, Eq, Show)
 
--- Lexer
+-- Lexing (Tokenization)
 
-wordToken = many1 alphaNum
+templateText = (replaceableWord <|> nonReplaceableWord) `sepBy` spaces
 
 replaceableWord = do
   char '$'
@@ -23,16 +34,9 @@ nonReplaceableWord = do
   s <- wordToken
   return $ NonReplaceableWord s
 
-templateText = (replaceableWord <|> nonReplaceableWord) `sepBy` spaces
+wordToken = many1 alphaNum
 
-lookupWord :: M.Map Word String -> Word -> Either String String
-lookupWord _ (NonReplaceableWord w) = Right w
-lookupWord dict (ReplaceableWord w) =
-    case M.lookup (ReplaceableWord w) dict of
-      Nothing -> Left w
-      Just wd -> Right wd
-
--- Parser
+-- Parsing
 
 evaluateTemplate :: M.Map Word String -> [Word] -> Either [String] [String]
 evaluateTemplate dict words =
@@ -42,6 +46,13 @@ evaluateTemplate dict words =
         Left (fst searched)
 
     where searched = partitionEithers $ map (lookupWord dict) words
+
+lookupWord :: M.Map Word String -> Word -> Either String String
+lookupWord _ (NonReplaceableWord w) = Right w
+lookupWord dict (ReplaceableWord w) =
+    case M.lookup (ReplaceableWord w) dict of
+      Nothing -> Left w
+      Just wd -> Right wd
 
 -- Input dictionary
 
