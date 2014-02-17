@@ -3,10 +3,13 @@
 import Text.Parsec
 import qualified Data.Map as M
 import Data.Either (partitionEithers)
+import Data.List (intercalate)
+import System.IO (hPutStrLn, stderr)
 
 data Word = ReplaceableWord String | NonReplaceableWord String
             deriving (Ord, Eq, Show)
 
+-- Tokenization rules
 wordToken = many1 alphaNum
 
 replaceableTokenMarker = char '$'
@@ -23,11 +26,23 @@ nonReplaceableWord = do
 
 templateText = (replaceableWord <|> nonReplaceableWord) `sepBy` spaces
 
-evaluateTemplate :: M.Map Word String -> [Word] -> [String]
+lookupWord :: M.Map Word String -> Word -> Either String String
+lookupWord _ (NonReplaceableWord w) = Right w
+lookupWord dict (ReplaceableWord w) =
+    case M.lookup (ReplaceableWord w) dict of
+      Nothing -> Left w
+      Just wd -> Right wd
+
+
+-- Parsing
+evaluateTemplate :: M.Map Word String -> [Word] -> Either [String] [String]
 evaluateTemplate dict words =
-    map (\w -> case w of
-                 ReplaceableWord wd    -> (M.!) dict (ReplaceableWord wd)
-                 NonReplaceableWord wd -> wd ) words
+    if null (fst searched) then
+        Right (snd searched)
+    else
+        Left (fst searched)
+
+    where searched = partitionEithers $ map (lookupWord dict) words
 
 dictionary :: M.Map Word String
 dictionary = M.fromList [ (ReplaceableWord "foo", "bar")
@@ -37,6 +52,8 @@ main = do
   toTranslate <- getLine
 
   case parse templateText "" toTranslate of
-    Left err -> putStrLn $ show err
+    Left err -> hPutStrLn stderr $ "Parse error: " ++ show err
     Right res ->
-        putStrLn $ unlines $ map show $ evaluateTemplate dictionary res
+        case evaluateTemplate dictionary res of
+          Left errs -> hPutStrLn stderr $ "Token(s) not found: " ++ show errs
+          Right r -> putStrLn $ "Parse success: " ++ (intercalate " " r)
