@@ -1,10 +1,12 @@
 # Dictionary Replacer in Haskell
 
-Recently in a Stack Builders coding dojo, we practiced [an exercise suggested by Corey Haines](http://www.confreaks.com/videos/104-aac2009-lightning-talk-under-your-fingers). In this exercise, you substitute any text surrounded by '$' signs with a dictionary substitution.
+Recently in a [Stack Builders](http://www.stackbuilders.com) coding dojo, we practiced [an exercise suggested by Corey Haines](http://www.confreaks.com/videos/104-aac2009-lightning-talk-under-your-fingers). In this exercise, you substitute any text surrounded by '$' signs with a dictionary substitution.
 
 At the time we did this exercise in Ruby, and [I came up with an extremely imperative algorithm](https://gist.github.com/jsl/8985707). Later, I decided that I wanted to see how it felt to implement in Haskell. I came up with a purely functional, type-safe implementation using the powerful Parsec library in about the same amount of lines of code as the Ruby implementation that I wrote.
 
-Implementing this exercise in Haskell, some things, like the `map`s that would come naturally in the Ruby implementation are still there. In the Ruby implementation I also avoided using regular expressions, but at the cost of readability as more conditionals crept into the code, and the amount of state that needed to be managed quickly increased. Using Parsec, the structure of the language becomes apparent, and I think errors would be much easier to detect visually than in the imperative version.
+Compared to the Ruby implementation which is heavily laden with conditionals, and which has a significant amount of state to track, I think that the structure of the language is much more apparent in the Haskell version. Using Parsec, this was incredibly easy to achieve (once I got a better grasp of the way that Parsec works) and I think errors would be much easier to detect in the Haskell version than in the ruby code.
+
+In both implementations I avoided using regular expressions. I agree with those who say that we should spend less time practicing regular expressions, and more time practicing writing parsers, so that's the approach that I took in these exercises.
 
 In [Corey's talk](http://www.confreaks.com/videos/104-aac2009-lightning-talk-under-your-fingers), he says,
 
